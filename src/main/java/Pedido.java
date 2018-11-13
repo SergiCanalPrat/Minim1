@@ -12,10 +12,15 @@ public class Pedido {
 
     private List<Producto> productosPedido;
 
+
     public Pedido(int idUsuario, List<Producto> productosPedido, boolean served) {
         this.idUsuario = idUsuario;
         this.served = served;
         this.productosPedido = productosPedido;
     }
 
+
+    public int getIdUsuarioFromPedido() {
+        return idUsuario;
+    }
 }

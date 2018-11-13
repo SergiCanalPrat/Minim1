@@ -1,12 +1,11 @@
 import org.apache.log4j.Logger;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 public class ProductManagerImpl implements ProductManager{
 
-    ArrayList<Producto> listaProductos = new ArrayList<Producto>();
-    ArrayList<Usuario> listaUsuarios = new ArrayList<Usuario>();
+    HashMap<Integer, Producto> mapaProductos = new HashMap<Integer, Producto>();
+    HashMap<Integer,Usuario> mapaUsuarios = new HashMap<Integer,Usuario>();
     private static ProductManagerImpl instance = null;
     final static Logger logger = Logger.getLogger(ProductManagerImpl.class);
     //private ArrayList<Producto> productosVendidos;
@@ -28,21 +27,26 @@ public class ProductManagerImpl implements ProductManager{
         return pedidos;
     }
 
-    public List<Pedido> getPedidosServidos(){
-        return pedidosServidos;
-    }
-
     //Public functions
 
     public List<Producto> listadoProductosOrdenados(){
-        return ordenarProductosPorPrecio(listaProductos);
+        
+        return ordenarProductosPorPrecio(mapaProductos);
+    }
+
+    private Producto getProducto(String nombre) {
+        return mapaProductos.get(nombre);
+    }
+
+    private Usuario getUsuario(int idUsuario){
+        return mapaUsuarios.get(idUsuario);
     }
 
     public void realizarPedido (int idUsuario, List<Producto> productos){
         this.pedidos.add(new Pedido(idUsuario, productos, false));
 
 
-        listaUsuarios.get(idUsuario).getListaPedidos().add(new Pedido(idUsuario,productos,false));
+        mapaUsuarios.get(idUsuario).getListaPedidos().add(new Pedido(idUsuario,productos,false));
         /*
 
         Usuario u = this.getUsuario(idUsuario);
@@ -53,12 +57,11 @@ public class ProductManagerImpl implements ProductManager{
 
     }
 
-    public boolean servirPedido() {
+    public Pedido servirPedido() {
 
         Pedido pedido;
         if (!pedidos.isEmpty()) {
             this.pedidosServidos.add(this.pedidos.element());
-            this.pedidos.remove();
 
             pedido = this.pedidos.remove();
 
@@ -68,21 +71,24 @@ public class ProductManagerImpl implements ProductManager{
                 Producto productoDelCataleg = this.getProducto(p.getNombre());
                 productoDelCataleg.updateNumVendes();
 
-            }
-            //Usuario u  = pedido.getUser();
-            //u.addPedido(pedido);
+
+            Usuario u  = mapaUsuarios.get(pedido.getIdUsuarioFromPedido());
+            u.addPedido(pedido);
+        }
         }
 
 
     }
 
+
+
     public List<Pedido> historialPedidosUsuario(int idUsuario){
-        return listaUsuarios.get(idUsuario).getListaPedidos();
+        return mapaUsuarios.get(idUsuario).getListaPedidos();
     }
 
     public List<Producto> topVentas(){
         List<Producto> aux = new ArrayList<Producto>();
-        aux.addAll(this.listaProductos);
+        aux.addAll(this.mapaProductos.values());
 
         Collections.sort(aux, new Comparator<Producto>() {
             @Override
@@ -98,9 +104,12 @@ public class ProductManagerImpl implements ProductManager{
 
     //Private Functions
     private ArrayList<Producto> ordenarProductosPorPrecio(ArrayList<Producto> listaProductos){
+        listaProductos = mapaProductos.values();
         listaProductos.sort(Comparator.comparing(Producto::getCost));
         return listaProductos;
     }
+
+
 
 
 }

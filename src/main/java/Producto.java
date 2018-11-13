@@ -17,6 +17,7 @@ public class Producto {
     private String nombre;
 
     public int getCost() {
+
         return cost;
     }
 
