@@ -1,5 +1,9 @@
 public class Producto {
 
+    public Producto(String nombre) {
+      this.nombre = nombre;
+    }
+
     private int numeroVentas;
 
     public int getNumeroVentas() {
@@ -19,4 +23,7 @@ public class Producto {
     private int cost;
 
 
+    public void updateNumVendes() {
+        this.numeroVentas++;
+    }
 }

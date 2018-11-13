@@ -11,6 +11,10 @@ public class Usuario {
         return listaPedidos;
     }
 
+    public void addPedido(Pedido p) {
+        getListaPedidos().add(p);
+    }
+
 
 
 }

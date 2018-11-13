@@ -9,9 +9,10 @@ public class ProductManagerImpl implements ProductManager{
     ArrayList<Usuario> listaUsuarios = new ArrayList<Usuario>();
     private static ProductManagerImpl instance = null;
     final static Logger logger = Logger.getLogger(ProductManagerImpl.class);
-    private ArrayList<Producto> productosVendidos;
-    private Queue<Pedido> pedidos;
+    //private ArrayList<Producto> productosVendidos;
+    private LinkedList<Pedido> pedidos;
     private List<Pedido> pedidosServidos;
+    private HashMap<String,Integer> ventas;
 
     //Singleton Pattern
 
@@ -23,7 +24,7 @@ public class ProductManagerImpl implements ProductManager{
 
     //Getters
 
-    public Queue<Pedido> getPedidos (){
+    public LinkedList<Pedido> getPedidos (){
         return pedidos;
     }
 
@@ -37,33 +38,42 @@ public class ProductManagerImpl implements ProductManager{
         return ordenarProductosPorPrecio(listaProductos);
     }
 
-    public void realizarPedido (int idUsuario, boolean servido, List<Producto> productos){
+    public void realizarPedido (int idUsuario, List<Producto> productos){
         this.pedidos.add(new Pedido(idUsuario, productos, false));
+
+
         listaUsuarios.get(idUsuario).getListaPedidos().add(new Pedido(idUsuario,productos,false));
+        /*
+
+        Usuario u = this.getUsuario(idUsuario);
+        u.addPedido(p);
+
+         */
+
 
     }
 
     public boolean servirPedido() {
 
+        Pedido pedido;
         if (!pedidos.isEmpty()) {
             this.pedidosServidos.add(this.pedidos.element());
             this.pedidos.remove();
-            int i = 0;
-            int j=0;
-            while (i < this.pedidosServidos.size()){
-                while (j < this.pedidosServidos.get(i).getProductosPedido().size()){
-                    int ventas = this.pedidosServidos.get(i).getProductosPedido().get(j).getNumeroVentas();
-                    ventas++;
-                    j++;
-                }
-                i++;
+
+            pedido = this.pedidos.remove();
+
+            List<Producto> productoList = pedido.getProductosPedido();
+
+            for (Producto p : productoList) {
+                Producto productoDelCataleg = this.getProducto(p.getNombre());
+                productoDelCataleg.updateNumVendes();
+
             }
-            return true;
-        } else {
-
-            return false;
-
+            //Usuario u  = pedido.getUser();
+            //u.addPedido(pedido);
         }
+
+
     }
 
     public List<Pedido> historialPedidosUsuario(int idUsuario){
@@ -71,6 +81,18 @@ public class ProductManagerImpl implements ProductManager{
     }
 
     public List<Producto> topVentas(){
+        List<Producto> aux = new ArrayList<Producto>();
+        aux.addAll(this.listaProductos);
+
+        Collections.sort(aux, new Comparator<Producto>() {
+            @Override
+            public int compare(Producto o1, Producto o2) {
+                return o1.getNumeroVentas()-o2.getNumeroVentas();
+            }
+        });
+
+        return aux;
+
 
     }
 
