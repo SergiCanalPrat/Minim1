@@ -27,12 +27,6 @@ public class ProductManagerImpl implements ProductManager{
         return pedidos;
     }
 
-    //Public functions
-
-    public List<Producto> listadoProductosOrdenados(){
-        
-        return ordenarProductosPorPrecio(mapaProductos);
-    }
 
     private Producto getProducto(String nombre) {
         return mapaProductos.get(nombre);
@@ -41,6 +35,9 @@ public class ProductManagerImpl implements ProductManager{
     private Usuario getUsuario(int idUsuario){
         return mapaUsuarios.get(idUsuario);
     }
+
+
+    //Public functions
 
     public void realizarPedido (int idUsuario, List<Producto> productos){
         this.pedidos.add(new Pedido(idUsuario, productos, false));
@@ -104,7 +101,6 @@ public class ProductManagerImpl implements ProductManager{
 
     //Private Functions
     private ArrayList<Producto> ordenarProductosPorPrecio(ArrayList<Producto> listaProductos){
-        listaProductos = mapaProductos.values();
         listaProductos.sort(Comparator.comparing(Producto::getCost));
         return listaProductos;
     }
