@@ -1,0 +1,10 @@
+<application>
+  <component name="FileTypeManager" version="17">
+    <extensionMap>
+      <mapping pattern="CommunityManager" type="PLAIN_TEXT" />
+      <mapping pattern="ca" type="XML" />
+      <mapping pattern="es" type="XML" />
+      <mapping pattern="en" type="XML" />
+    </extensionMap>
+  </component>
+</application>
