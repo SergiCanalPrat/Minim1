@@ -1,17 +1,17 @@
 import org.apache.log4j.Logger;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 public class ProductManagerImpl implements ProductManager{
 
-    ArrayList<Producto> listaProductos = new ArrayList<Producto>();
-    ArrayList<Usuario> listaUsuarios = new ArrayList<Usuario>();
+    HashMap<Integer, Producto> mapaProductos = new HashMap<Integer, Producto>();
+    HashMap<Integer,Usuario> mapaUsuarios = new HashMap<Integer,Usuario>();
     private static ProductManagerImpl instance = null;
     final static Logger logger = Logger.getLogger(ProductManagerImpl.class);
-    private ArrayList<Producto> productosVendidos;
-    private Queue<Pedido> pedidos;
+    //private ArrayList<Producto> productosVendidos;
+    private LinkedList<Pedido> pedidos;
     private List<Pedido> pedidosServidos;
+    private HashMap<String,Integer> ventas;
 
     //Singleton Pattern
 
@@ -23,54 +23,79 @@ public class ProductManagerImpl implements ProductManager{
 
     //Getters
 
-    public Queue<Pedido> getPedidos (){
+    public LinkedList<Pedido> getPedidos (){
         return pedidos;
     }
 
-    public List<Pedido> getPedidosServidos(){
-        return pedidosServidos;
+
+    private Producto getProducto(String nombre) {
+        return mapaProductos.get(nombre);
     }
+
+    private Usuario getUsuario(int idUsuario){
+        return mapaUsuarios.get(idUsuario);
+    }
+
 
     //Public functions
 
-    public List<Producto> listadoProductosOrdenados(){
-        return ordenarProductosPorPrecio(listaProductos);
-    }
-
-    public void realizarPedido (int idUsuario, boolean servido, List<Producto> productos){
+    public void realizarPedido (int idUsuario, List<Producto> productos){
         this.pedidos.add(new Pedido(idUsuario, productos, false));
-        listaUsuarios.get(idUsuario).getListaPedidos().add(new Pedido(idUsuario,productos,false));
+
+
+        mapaUsuarios.get(idUsuario).getListaPedidos().add(new Pedido(idUsuario,productos,false));
+        /*
+
+        Usuario u = this.getUsuario(idUsuario);
+        u.addPedido(p);
+
+         */
+
 
     }
 
-    public boolean servirPedido() {
+    public Pedido servirPedido() {
 
+        Pedido pedido;
         if (!pedidos.isEmpty()) {
             this.pedidosServidos.add(this.pedidos.element());
-            this.pedidos.remove();
-            int i = 0;
-            int j=0;
-            while (i < this.pedidosServidos.size()){
-                while (j < this.pedidosServidos.get(i).getProductosPedido().size()){
-                    int ventas = this.pedidosServidos.get(i).getProductosPedido().get(j).getNumeroVentas();
-                    ventas++;
-                    j++;
-                }
-                i++;
-            }
-            return true;
-        } else {
 
-            return false;
+            pedido = this.pedidos.remove();
 
+            List<Producto> productoList = pedido.getProductosPedido();
+
+            for (Producto p : productoList) {
+                Producto productoDelCataleg = this.getProducto(p.getNombre());
+                productoDelCataleg.updateNumVendes();
+
+
+            Usuario u  = mapaUsuarios.get(pedido.getIdUsuarioFromPedido());
+            u.addPedido(pedido);
         }
+        }
+
+
     }
 
+
+
     public List<Pedido> historialPedidosUsuario(int idUsuario){
-        return listaUsuarios.get(idUsuario).getListaPedidos();
+        return mapaUsuarios.get(idUsuario).getListaPedidos();
     }
 
     public List<Producto> topVentas(){
+        List<Producto> aux = new ArrayList<Producto>();
+        aux.addAll(this.mapaProductos.values());
+
+        Collections.sort(aux, new Comparator<Producto>() {
+            @Override
+            public int compare(Producto o1, Producto o2) {
+                return o1.getNumeroVentas()-o2.getNumeroVentas();
+            }
+        });
+
+        return aux;
+
 
     }
 
@@ -79,6 +104,8 @@ public class ProductManagerImpl implements ProductManager{
         listaProductos.sort(Comparator.comparing(Producto::getCost));
         return listaProductos;
     }
+
+
 
 
 }

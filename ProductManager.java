@@ -4,9 +4,7 @@ public interface ProductManager {
 
 //Fachada: definir una interfaz y sus parámetros
 
-    List<Producto> listadoPedidoOrdenado();
-    void realizarPedido(String Usuario, Pedido p);
-    boolean servirPedido();
-    List<Pedido> historialPedidosUsuario(String Usuario);
+    void realizarPedido(int Usuario, List<Producto> p);
+    Pedido servirPedido();
     List<Producto> topVentas();
 }
