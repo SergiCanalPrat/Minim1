@@ -22,6 +22,7 @@ public class ProductManagerImplTest {
     public void test() {
         Producto cafe = new Producto("cafe");
         Producto bocata = new Producto("bocata");
+        Producto esteban = new Producto("esteban");
 
 
 
@@ -30,6 +31,7 @@ public class ProductManagerImplTest {
         listPedido.add(cafe);
         listPedido.add(cafe);
         listPedido.add(bocata);
+        listPedido.add(esteban);
 
 
         //
